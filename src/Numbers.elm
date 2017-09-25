@@ -18,8 +18,18 @@ main =
 
 -- MODEL
 
-type alias Input = String
+type alias Input = Maybe Int
 type alias Inputs = List Input
+
+inputInvalid inp =
+  case inp of
+    Nothing ->
+      True
+    _ ->
+      False
+
+hasInvalidInput ins =
+  List.any inputInvalid ins
 
 type alias Model =
   { inputs : Inputs
@@ -64,7 +74,7 @@ update msg model =
     UpdateInput ix newVal ->
       ({ model | inputs = (alterInput model.inputs ix newVal) }, Cmd.none)
     AddInput ->
-      ({ model | inputs = model.inputs ++ [""]}, Cmd.none)
+      ({ model | inputs = model.inputs ++ [Nothing]}, Cmd.none)
     InvalidInput ->
       (model, Cmd.none)
 
@@ -84,22 +94,33 @@ inputTyped : Int -> String -> Msg
 inputTyped ix input =
   case String.toInt input of
     Ok n ->
-      UpdateInput ix input
+      UpdateInput ix (Just n)
     Err _ ->
       InvalidInput
+
+
+inputDisplay inp =
+  case inp of
+    Just i ->
+      toString i
+    Nothing ->
+      ""
 
 inputView : Int -> Input -> Html Msg
 inputView ix inp =
   div [] [
-    input [onInput (inputTyped ix), value inp] []
+    input [onInput (inputTyped ix), inp |> inputDisplay |> value] []
     ]
 
 inputsView : Model -> Html Msg
 inputsView model =
-  div []
-    [ div [] (List.indexedMap inputView model.inputs)
-    , button [onClick AddInput] [text "add"]
-    ]
+  let
+    disableAdd = hasInvalidInput model.inputs
+  in
+    div []
+      [ div [] (List.indexedMap inputView model.inputs)
+      , button [onClick AddInput, disabled disableAdd] [text "add"]
+      ]
 
 -- SUBSCRIPTIONS
 
