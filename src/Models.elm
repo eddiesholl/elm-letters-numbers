@@ -10,9 +10,44 @@ inputInvalid inp =
     _ ->
       False
 
-hasInvalidInput ins =
+anyInvalidInput ins =
   List.any inputInvalid ins
 
+isTargetValid t =
+  case t of
+    Nothing ->
+      False
+    _ ->
+      True
+
+isProblemReady { inputs, target } =
+  not (anyInvalidInput inputs) && isTargetValid target && ((List.length inputs) > 0)
+
 type alias Model =
-  { inputs : Inputs
+  { problem : Problem
   }
+
+type alias Problem =
+  { inputs: Inputs
+  , target: Input
+  }
+
+type alias SolutionSet =
+  { problem: Problem
+  , solutions: Solutions
+  }
+
+type alias Solution =
+  { attempt: Expression
+  , result: Int
+  }
+
+type alias Solutions = List Solution
+
+type Expression
+ = Constant Int
+ | Pair Expression Expression Operator
+
+type Operator
+ = Add
+ | Substract

@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
-import Models exposing (Model, Input, Inputs, hasInvalidInput)
+import Models exposing (Problem, Model, Input, Inputs, anyInvalidInput, isTargetValid, isProblemReady)
 
 main =
   Html.program
@@ -22,7 +22,7 @@ main =
 
 init : (Model, Cmd Msg)
 init =
-  ( Model []
+  ( Model (Problem [] Nothing)
   , Cmd.none
   )
 
@@ -35,6 +35,8 @@ type Msg
   = UpdateInput Int Input
   | AddInput
   | InvalidInput
+  | UpdateTarget Input
+  | StartSolver
 
 alterInput : Inputs -> Int -> Input -> Inputs
 alterInput inputs ix newVal =
@@ -56,10 +58,26 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     UpdateInput ix newVal ->
-      ({ model | inputs = (alterInput model.inputs ix newVal) }, Cmd.none)
+      let
+        oldProblem = model.problem
+        newProblem = { oldProblem | inputs = (alterInput oldProblem.inputs ix newVal) }
+      in
+        ({ model | problem = newProblem }, Cmd.none)
     AddInput ->
-      ({ model | inputs = model.inputs ++ [Nothing]}, Cmd.none)
+      let
+        oldProblem = model.problem
+        newProblem = { oldProblem | inputs = oldProblem.inputs ++ [Nothing] }
+      in
+        ({ model | problem = newProblem }, Cmd.none)
+    UpdateTarget newTarget ->
+      let
+        oldProblem = model.problem
+        newProblem = { oldProblem | target = newTarget }
+      in
+        ({ model | problem = newProblem}, Cmd.none)
     InvalidInput ->
+      (model, Cmd.none)
+    StartSolver ->
       (model, Cmd.none)
 
 
@@ -71,7 +89,8 @@ view : Model -> Html Msg
 view model =
   div []
     [ h2 [] [text "Hi"]
-    , div [] [(inputsView model)]
+    , div [] [(inputsView model.problem)]
+    , solverView model
     ]
 
 inputTyped : Int -> String -> Msg
@@ -79,6 +98,14 @@ inputTyped ix input =
   case String.toInt input of
     Ok n ->
       UpdateInput ix (Just n)
+    Err _ ->
+      InvalidInput
+
+targetTyped : String -> Msg
+targetTyped input =
+  case String.toInt input of
+    Ok n ->
+      UpdateTarget (Just n)
     Err _ ->
       InvalidInput
 
@@ -96,16 +123,28 @@ inputView ix inp =
     input [onInput (inputTyped ix), inp |> inputDisplay |> value] []
     ]
 
-inputsView : Model -> Html Msg
-inputsView model =
+inputsView : Problem -> Html Msg
+inputsView problem =
   let
-    disableAdd = hasInvalidInput model.inputs
+    invalidInput = anyInvalidInput problem.inputs
+    validTarget = isTargetValid problem.target
   in
     div []
-      [ div [] (List.indexedMap inputView model.inputs)
-      , button [onClick AddInput, disabled disableAdd] [text "add"]
+      [ h3 [] [text "Target"]
+      , input [onInput targetTyped, problem.target |> inputDisplay |> value] []
+      , h3 [] [text "Inputs"]
+      , div [] (List.indexedMap inputView problem.inputs)
+      , button [onClick AddInput, disabled invalidInput] [text "add"]
       ]
 
+solverView { problem } =
+  div []
+    [ h3 [] [text "Solver"]
+    , button [onClick StartSolver, problem |> isProblemReady |> not |> disabled] [text "Start"]
+    -- , text (toString (List.length problem.inputs))
+    ]
+
+    
 -- SUBSCRIPTIONS
 
 
