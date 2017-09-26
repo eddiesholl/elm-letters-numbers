@@ -39,6 +39,13 @@ type SolverState
   | Running
   | Done
 
+type Msg
+  = UpdateInput Int UserInput
+  | AddInput
+  | InvalidInput
+  | UpdateTarget UserInput
+  | StartSolver
+  
 type alias Model =
   { problem : ProblemSetup
   , solution : Maybe SolutionSet
@@ -72,4 +79,4 @@ type Expression
 
 type Operator
  = Add
- | Substract
+ | Subtract

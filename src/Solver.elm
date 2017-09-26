@@ -32,4 +32,8 @@ calculateResult e =
 
 evaluateExpression: Expression -> Int
 evaluateExpression e =
-  0
+  case e of
+    Constant c ->
+      c
+    Pair e1 e2 op ->
+      0

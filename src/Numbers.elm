@@ -5,9 +5,10 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
-import Models exposing (Problem, ProblemSetup, Model, UserInput, UserInputs, Input, Inputs, Solution, SolutionSet, SolverState(..), problemSetupToProblem, anyInvalidInput, isTargetValid, isProblemReady)
+import Models exposing (Msg(..), Problem, ProblemSetup, Model, UserInput, UserInputs, Input, Inputs, Solution, SolutionSet, SolverState(..), problemSetupToProblem, anyInvalidInput, isTargetValid, isProblemReady)
 import Solver exposing (solve)
 import Styles exposing (styles)
+import Render exposing (renderExpression)
 
 main =
   Html.program
@@ -32,13 +33,6 @@ init =
 
 
 -- UPDATE
-
-type Msg
-  = UpdateInput Int UserInput
-  | AddInput
-  | InvalidInput
-  | UpdateTarget UserInput
-  | StartSolver
 
 alterInput : UserInputs -> Int -> UserInput -> UserInputs
 alterInput inputs ix newVal =
@@ -157,7 +151,7 @@ rowSpacer =
 solutionView: Solution -> Html Msg
 solutionView solution =
   div [styles Styles.flexRow]
-    [ textDiv solution.attempt
+    [ renderExpression solution.attempt
     , rowSpacer
     , textDiv solution.result
     ]
