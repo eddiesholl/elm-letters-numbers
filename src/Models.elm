@@ -23,8 +23,15 @@ isTargetValid t =
 isProblemReady { inputs, target } =
   not (anyInvalidInput inputs) && isTargetValid target && ((List.length inputs) > 0)
 
+type SolverState
+  = Waiting
+  | Running
+  | Done
+
 type alias Model =
   { problem : Problem
+  , solution : Maybe SolutionSet
+  , state : SolverState
   }
 
 type alias Problem =

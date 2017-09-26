@@ -5,7 +5,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
-import Models exposing (Problem, Model, Input, Inputs, anyInvalidInput, isTargetValid, isProblemReady)
+import Models exposing (Problem, Model, Input, Inputs, Solution, SolutionSet, SolverState(..), anyInvalidInput, isTargetValid, isProblemReady)
+import Solver exposing (solve)
 
 main =
   Html.program
@@ -22,14 +23,13 @@ main =
 
 init : (Model, Cmd Msg)
 init =
-  ( Model (Problem [] Nothing)
+  ( Model (Problem [] Nothing) Nothing Waiting
   , Cmd.none
   )
 
 
 
 -- UPDATE
-
 
 type Msg
   = UpdateInput Int Input
@@ -78,7 +78,7 @@ update msg model =
     InvalidInput ->
       (model, Cmd.none)
     StartSolver ->
-      (model, Cmd.none)
+      ({ model | solution = Just (solve model.problem), state = Running }, Cmd.none)
 
 
 
@@ -137,14 +137,43 @@ inputsView problem =
       , button [onClick AddInput, disabled invalidInput] [text "add"]
       ]
 
-solverView { problem } =
+textDiv t =
+    t |> toString |> text
+
+solutionView: Solution -> Html Msg
+solutionView solution =
   div []
-    [ h3 [] [text "Solver"]
-    , button [onClick StartSolver, problem |> isProblemReady |> not |> disabled] [text "Start"]
-    -- , text (toString (List.length problem.inputs))
+    [ textDiv solution.attempt
+    , textDiv solution.result
     ]
 
-    
+solverView: Model -> Html Msg
+solverView { problem, solution, state } =
+  let
+    canStart = case state of
+      Waiting ->
+        isProblemReady problem
+      _ ->
+        False
+  in
+    div []
+      [ h3 [] [text "Solver"]
+      , button [onClick StartSolver, canStart |> not |> disabled] [text "Start"]
+      , solutionsView solution
+      ]
+
+solutionsView: Maybe SolutionSet -> Html Msg
+solutionsView solution =
+  case solution of
+    Nothing ->
+      text "No solution yet"
+    Just s ->
+      div []
+        [ text (s.solutions |> List.length |> toString) ++ " solutions"
+        , div [] (List.map solutionView s.solutions)
+        ]
+
+
 -- SUBSCRIPTIONS
 
 

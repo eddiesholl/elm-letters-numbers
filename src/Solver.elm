@@ -1,10 +1,10 @@
 module Solver exposing (..)
 
-import Models exposing (Input, Inputs)
+import Models exposing (Input, Inputs, Problem, Solution, SolutionSet, Expression)
 
 solve: Problem -> SolutionSet
 solve problem =
-    { problem, problem.inputs |> generateAttempts |> calculateResults }
+    { problem = problem, solutions = problem.inputs |> generateAttempts |> calculateResults }
 
 generateAttempts: Inputs -> List Expression
 generateAttempts inputs =
@@ -12,11 +12,11 @@ generateAttempts inputs =
 
 calculateResults: List Expression -> List Solution
 calculateResults attempts =
-  List.map evaluateExpression attempts
+  List.map calculateResult attempts
 
 calculateResult: Expression -> Solution
 calculateResult e =
-  { e, evaluateExpression e }
+  { attempt = e, result = evaluateExpression e }
 
 evaluateExpression: Expression -> Int
 evaluateExpression e =
