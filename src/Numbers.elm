@@ -26,7 +26,7 @@ main =
 init : (Model, Cmd Msg)
 init =
   -- ( Model (Problem [] Nothing) Nothing Waiting
-  ( Model (ProblemSetup [Just 1] (Just 1)) Nothing Waiting
+  ( Model (ProblemSetup [Just 1, Just 2, Just 3] (Just 1)) Nothing Waiting
   , Cmd.none
   )
 

@@ -16,7 +16,7 @@ expressionToText e =
     Constant c ->
       c |> toString
     Pair e1 e2 op ->
-      (toString e1) ++ " " ++ (opToText op) ++ " " ++ (toString e2)
+      (expressionToText e1) ++ " " ++ (opToText op) ++ " " ++ (expressionToText e2)
 
 opToText: Operator -> String
 opToText op =
