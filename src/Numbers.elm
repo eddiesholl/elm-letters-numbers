@@ -5,6 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
+import Models exposing (Model, Input, Inputs, hasInvalidInput)
 
 main =
   Html.program
@@ -17,23 +18,6 @@ main =
 
 
 -- MODEL
-
-type alias Input = Maybe Int
-type alias Inputs = List Input
-
-inputInvalid inp =
-  case inp of
-    Nothing ->
-      True
-    _ ->
-      False
-
-hasInvalidInput ins =
-  List.any inputInvalid ins
-
-type alias Model =
-  { inputs : Inputs
-  }
 
 
 init : (Model, Cmd Msg)
