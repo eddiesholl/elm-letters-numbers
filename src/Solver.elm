@@ -1,14 +1,26 @@
 module Solver exposing (..)
 
-import Models exposing (Input, Inputs, Problem, Solution, SolutionSet, Expression)
+import Models exposing (Input, Inputs, Problem(..), Solution, SolutionSet, Expression(..), Operator(..))
 
-solve: Problem -> SolutionSet
+solve: Problem -> Maybe SolutionSet
 solve problem =
-    { problem = problem, solutions = problem.inputs |> generateAttempts |> calculateResults }
+  case problem of
+    InvalidProblem -> Nothing
+    ValidProblem inputs target ->
+      Just { problem = problem, solutions = inputs |> generateAttempts |> calculateResults }
 
 generateAttempts: Inputs -> List Expression
 generateAttempts inputs =
-  []
+  generateAttemptsArgs inputs [Add]
+
+generateAttemptsArgs: Inputs -> List Operator -> List Expression
+generateAttemptsArgs inputs args =
+  case List.head inputs of
+    Nothing ->
+      []
+    Just ih ->
+      [Constant ih]
+
 
 calculateResults: List Expression -> List Solution
 calculateResults attempts =

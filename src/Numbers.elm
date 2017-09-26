@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
-import Models exposing (Problem, Model, Input, Inputs, Solution, SolutionSet, SolverState(..), anyInvalidInput, isTargetValid, isProblemReady)
+import Models exposing (Problem, ProblemSetup, Model, UserInput, UserInputs, Input, Inputs, Solution, SolutionSet, SolverState(..), problemSetupToProblem, anyInvalidInput, isTargetValid, isProblemReady)
 import Solver exposing (solve)
 
 main =
@@ -23,7 +23,8 @@ main =
 
 init : (Model, Cmd Msg)
 init =
-  ( Model (Problem [] Nothing) Nothing Waiting
+  -- ( Model (Problem [] Nothing) Nothing Waiting
+  ( Model (ProblemSetup [Just 1] (Just 1)) Nothing Waiting
   , Cmd.none
   )
 
@@ -32,13 +33,13 @@ init =
 -- UPDATE
 
 type Msg
-  = UpdateInput Int Input
+  = UpdateInput Int UserInput
   | AddInput
   | InvalidInput
-  | UpdateTarget Input
+  | UpdateTarget UserInput
   | StartSolver
 
-alterInput : Inputs -> Int -> Input -> Inputs
+alterInput : UserInputs -> Int -> UserInput -> UserInputs
 alterInput inputs ix newVal =
   case (List.head inputs) of
     Nothing ->
@@ -74,11 +75,14 @@ update msg model =
         oldProblem = model.problem
         newProblem = { oldProblem | target = newTarget }
       in
-        ({ model | problem = newProblem}, Cmd.none)
+        ({ model | problem = newProblem }, Cmd.none)
     InvalidInput ->
       (model, Cmd.none)
     StartSolver ->
-      ({ model | solution = Just (solve model.problem), state = Running }, Cmd.none)
+      let
+        newSolution = model.problem |> problemSetupToProblem |> solve
+      in
+        ({ model | solution = newSolution, state = Running }, Cmd.none)
 
 
 
@@ -95,19 +99,25 @@ view model =
 
 inputTyped : Int -> String -> Msg
 inputTyped ix input =
-  case String.toInt input of
-    Ok n ->
-      UpdateInput ix (Just n)
-    Err _ ->
-      InvalidInput
+  case input of
+    "" -> UpdateInput ix Nothing
+    _ ->
+      case String.toInt input of
+        Ok n ->
+          UpdateInput ix (Just n)
+        Err _ ->
+          InvalidInput
 
 targetTyped : String -> Msg
 targetTyped input =
-  case String.toInt input of
-    Ok n ->
-      UpdateTarget (Just n)
-    Err _ ->
-      InvalidInput
+  case input of
+    "" -> UpdateTarget Nothing
+    _ ->
+      case String.toInt input of
+        Ok n ->
+          UpdateTarget (Just n)
+        Err _ ->
+          InvalidInput
 
 
 inputDisplay inp =
@@ -117,13 +127,13 @@ inputDisplay inp =
     Nothing ->
       ""
 
-inputView : Int -> Input -> Html Msg
+inputView : Int -> UserInput -> Html Msg
 inputView ix inp =
   div [] [
     input [onInput (inputTyped ix), inp |> inputDisplay |> value] []
     ]
 
-inputsView : Problem -> Html Msg
+inputsView : ProblemSetup -> Html Msg
 inputsView problem =
   let
     invalidInput = anyInvalidInput problem.inputs
@@ -169,8 +179,9 @@ solutionsView solution =
       text "No solution yet"
     Just s ->
       div []
-        [ text (s.solutions |> List.length |> toString) ++ " solutions"
-        , div [] (List.map solutionView s.solutions)
+        [
+        (s.solutions |> List.length |> toString) ++ " solutions" |> text ,
+        div [] (List.map solutionView s.solutions)
         ]
 
 
