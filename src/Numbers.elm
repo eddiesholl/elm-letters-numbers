@@ -7,6 +7,7 @@ import Html.Events exposing (..)
 
 import Models exposing (Problem, ProblemSetup, Model, UserInput, UserInputs, Input, Inputs, Solution, SolutionSet, SolverState(..), problemSetupToProblem, anyInvalidInput, isTargetValid, isProblemReady)
 import Solver exposing (solve)
+import Styles exposing (styles)
 
 main =
   Html.program
@@ -91,7 +92,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div []
+  div [styles Styles.page]
     [ h2 [] [text "Hi"]
     , div [] [(inputsView model.problem)]
     , solverView model
@@ -148,12 +149,16 @@ inputsView problem =
       ]
 
 textDiv t =
-    t |> toString |> text
+    div [] [t |> toString |> text]
+
+rowSpacer =
+  div [styles Styles.rowSpacer] []
 
 solutionView: Solution -> Html Msg
 solutionView solution =
-  div []
+  div [styles Styles.flexRow]
     [ textDiv solution.attempt
+    , rowSpacer
     , textDiv solution.result
     ]
 
