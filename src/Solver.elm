@@ -1,6 +1,7 @@
 module Solver exposing (..)
 
 import Models exposing (Input, Inputs, Problem(..), Solution, SolutionSet, Expression(..), Operator(..))
+import Attempts exposing (generateAttempts)
 
 solve: Problem -> Maybe SolutionSet
 solve problem =
@@ -8,30 +9,6 @@ solve problem =
     InvalidProblem -> Nothing
     ValidProblem inputs target ->
       Just { problem = problem, solutions = inputs |> generateAttempts |> calculateResults }
-
-generateAttempts: Inputs -> List Expression
-generateAttempts inputs =
-  generateAttemptsArgs inputs [Add, Subtract]
-
-generateAttemptsArgs: Inputs -> List Operator -> List Expression
-generateAttemptsArgs inputs args =
-  case List.head inputs of
-    Nothing ->
-      []
-    Just headInputs ->
-      case List.tail inputs of
-        Nothing ->
-          [Constant headInputs]
-        Just tailInputs ->
-          let
-            c = Constant headInputs
-            nextExpressions = generateAttemptsArgs tailInputs args
-          in
-            [c] ++ (List.concatMap (eachArg args c) nextExpressions)
-
-eachArg: List Operator -> Expression -> Expression -> List Expression
-eachArg args e1 e2 =
-  List.map (Pair e1 e2) args
 
 calculateResults: List Expression -> List Solution
 calculateResults attempts =
