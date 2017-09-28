@@ -26,7 +26,7 @@ main =
 init : (Model, Cmd Msg)
 init =
   -- ( Model (Problem [] Nothing) Nothing Waiting
-  ( Model (ProblemSetup [Just 1, Just 2, Just 3] (Just 1)) Nothing Waiting
+  ( Model (ProblemSetup [Just 45, Just 8, Just 3, Just 24] (Just 634)) Nothing Waiting
   , Cmd.none
   )
 
@@ -87,7 +87,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
   div [styles Styles.page]
-    [ h2 [] [text "Hi"]
+    [ h2 [] [text "Letters and Numbers Solver"]
     , div [] [(inputsView model.problem)]
     , solverView model
     ]
@@ -153,6 +153,7 @@ solutionRow solution =
   tr []
     [ td [] [renderExpression solution.attempt]
     , td [] [textDiv solution.result]
+    , td [] [textDiv solution.distance]
     ]
 
 solverView: Model -> Html Msg
@@ -175,16 +176,15 @@ solutionsView: Maybe SolutionSet -> Html Msg
 solutionsView solution =
   case solution of
     Nothing ->
-      text "No solution yet"
+      div [] [text "No solution yet"]
     Just s ->
       div []
         [
         (s.solutions |> List.length |> toString) ++ " solutions" |> text
         , table [class "table"]
-          [ thead [] [ tr [] [ th [] [text "Solution"], th [] [text "Result"] ] ]
+          [ thead [] [ tr [] [ th [] [text "Solution"], th [] [text "Result"], th [] [text "Distance"] ] ]
           , tbody [] (List.map solutionRow s.solutions)
           ]
-          -- (List.map solutionRow s.solutions)
         ]
 
 
