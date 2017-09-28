@@ -5,11 +5,13 @@ import Models exposing (Inputs,  Expression(..), Operator(..), PairedOperator, P
 opReverse op =
   case op of
     Add -> False
+    Multiply -> False
     Subtract -> True
+    -- Divide -> True
 
 generateAttempts: Inputs -> List Expression
 generateAttempts inputs =
-  inputs |> inputsToConstants |> (deriveExpressions [Add, Subtract])
+  inputs |> inputsToConstants |> (deriveExpressions [Add, Subtract, Multiply])
 
 inputsToConstants =
   List.map ConstExp

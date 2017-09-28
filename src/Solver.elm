@@ -46,3 +46,7 @@ evalPair e1 e2 op =
         eval1 - eval2
       Add ->
         eval1 + eval2
+      Multiply ->
+        eval1 * eval2
+      -- Divide ->
+      --   eval1 / eval2

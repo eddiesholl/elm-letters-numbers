@@ -92,3 +92,5 @@ type Expression
 type Operator
  = Add
  | Subtract
+ | Multiply
+ -- | Divide

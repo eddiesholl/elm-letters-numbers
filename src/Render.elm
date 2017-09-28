@@ -23,3 +23,5 @@ opToText op =
   case op of
     Add -> "+"
     Subtract -> "-"
+    Multiply -> "x"
+    -- Divide -> "/"
