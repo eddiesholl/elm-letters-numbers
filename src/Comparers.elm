@@ -2,40 +2,40 @@ module Comparers exposing (..)
 
 import Models exposing (Expression(..), Operator(..))
 
-operatorPrecedence op =
+opPrecedence op =
   case op of
     Add -> 1
     Subtract -> 2
 
 compareExpressions a b =
   case a of
-    Constant c1 ->
+    ConstExp c1 ->
       case b of
-        Constant c2 ->
+        ConstExp c2 ->
           compare c1 c2
-        Pair _ _ _ ->
+        OpExp _ ->
           LT
-    Pair e1a e2a opa ->
+    OpExp pairedOpA ->
       case b of
-        Constant _ ->
+        ConstExp _ ->
           GT
-        Pair e1b e2b opb ->
+        OpExp pairedOpB ->
           let
-            sortE1 = compareExpressions e1a e1b
-            sortE2 = compareExpressions e2a e2b
-            sortOp = compareOperators opa opb
+            sortLeft = compareExpressions pairedOpA.pair.left pairedOpB.pair.left
+            sortRight = compareExpressions pairedOpA.pair.right pairedOpB.pair.right
+            sortOp = compareOperators pairedOpA.op pairedOpB.op
           in
-            case sortE1 of
+            case sortLeft of
               EQ ->
-                case sortE2 of
+                case sortRight of
                   EQ ->
                     sortOp
-                  _ -> sortE2
-              _ -> sortE1
+                  _ -> sortRight
+              _ -> sortLeft
 
 compareOperators a b =
   let
-    precA = operatorPrecedence a
-    precB = operatorPrecedence b
+    precA = opPrecedence a
+    precB = opPrecedence b
   in
     compare precA precB

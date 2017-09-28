@@ -7,16 +7,16 @@ import ElmTestBDDStyle exposing (..)
 import Dict
 
 import Attempts exposing (..)
-import Models exposing (Expression(..), Operator(..))
+import Models exposing (Expression(..), Operator(..), PairedOperator, Pair)
 import Comparers exposing (compareExpressions)
 
-c1 = Constant 1
-c2 = Constant 2
-c3 = Constant 3
-p12Add = Pair c1 c2 Add
-p21Add = Pair c2 c1 Add
-p12Subtract = Pair c1 c2 Subtract
-p21Subtract = Pair c2 c1 Subtract
+c1 = ConstExp 1
+c2 = ConstExp 2
+c3 = ConstExp 3
+p12Add = OpExp (PairedOperator (Pair c1 c2) Add)
+p21Add = OpExp (PairedOperator (Pair c2 c1) Add)
+p12Subtract = OpExp (PairedOperator (Pair c1 c2) Subtract)
+p21Subtract = OpExp (PairedOperator (Pair c2 c1) Subtract)
 
 haveAllItems: List a -> List a -> (a -> a -> Order) -> Expectation
 haveAllItems l1 l2 comparer =
@@ -34,20 +34,20 @@ suite =
       [ it "processes empty input" <|
         expect (generateAttempts []) to equal []
       ]
-      , describe "generateAttemptsConsts"
+      , describe "inputsToConstants"
       [ it "processes empty input" <|
-        expect (generateAttemptsConsts []) to equal []
+        expect (inputsToConstants []) to equal []
       , it "takes a single input" <|
-        expect (generateAttemptsConsts [1]) to haveAllExpressions [Constant 1]
+        expect (inputsToConstants [1]) to haveAllExpressions [c1]
       , it "takes 3 inputs" <|
-        expect (generateAttemptsConsts [1, 2, 3]) to haveAllExpressions [c1, c2, c3]
+        expect (inputsToConstants [1, 2, 3]) to haveAllExpressions [c1, c2, c3]
       ]
-      , describe "generateAttemptsArgs"
+      , describe "deriveExpressions"
       [ it "processes empty input" <|
-        expect (generateAttemptsArgs [] []) to equal []
+        expect (deriveExpressions [] []) to equal []
       , it "takes 2 inputs and a single operator" <|
-        expect (generateAttemptsArgs [1, 2] [Add]) to haveAllExpressions [p12Add]
+        expect (deriveExpressions [Add] [c1, c2]) to haveAllExpressions [c1, c2, p12Add]
       , it "takes 2 inputs and 2 operators" <|
-        expect (generateAttemptsArgs [1, 2] [Add, Subtract]) to haveAllExpressions [p12Add, p12Subtract, p21Add, p21Subtract]
+        expect (deriveExpressions [Add, Subtract] [c1, c2] ) to haveAllExpressions [c1, c2, p12Add, p12Subtract, p21Subtract]
       ]
     ]

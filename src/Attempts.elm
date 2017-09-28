@@ -1,28 +1,45 @@
 module Attempts exposing (..)
 
-import Models exposing (Inputs,  Expression(..), Operator(..))
+import Models exposing (Inputs,  Expression(..), Operator(..), PairedOperator, Pair)
+
+opReverse op =
+  case op of
+    Add -> False
+    Subtract -> True
 
 generateAttempts: Inputs -> List Expression
 generateAttempts inputs =
-  (generateAttemptsConsts inputs) ++
-  (generateAttemptsArgs inputs [Add, Subtract])
+  inputs |> inputsToConstants |> (deriveExpressions [Add, Subtract])
 
-generateAttemptsConsts inputs =
-  List.map Constant inputs
+inputsToConstants =
+  List.map ConstExp
 
-generateAttemptsArgs: Inputs -> List Operator -> List Expression
-generateAttemptsArgs inputs args =
+deriveExpressions: List Operator -> List Expression -> List Expression
+deriveExpressions args inputs =
   case inputs of
-    i1::i2::iRest ->
-      let
-        c1 = Constant i1
-        c2 = Constant i2
-      in
-        (eachArg args c1 c2) ++ (generateAttemptsArgs (i2::iRest) args)
-    _ ->
+    [e1, e2] ->
+      [e1, e2] ++ (applyArgs e1 e2 args)
+    [e1] ->
+      [e1]
+    [] ->
       []
+    e1::eRest ->
+      crossApplyExpr e1 (deriveExpressions args eRest)
 
+applyArgs e1 e2 args =
+  List.concatMap (applyArg e1 e2) args
 
-eachArg: List Operator -> Expression -> Expression -> List Expression
-eachArg args e1 e2 =
-  List.map (Pair e1 e2) args
+applyArg e1 e2 arg =
+  case (opReverse arg) of
+    True -> [(buildOpExp e1 e2 arg), (buildOpExp e2 e1 arg)]
+    False -> [buildOpExp e1 e2 arg]
+
+buildOpExp left right arg =
+  OpExp (PairedOperator (Pair left right) arg)
+
+-- eachArg: List Operator -> Expression -> Expression -> List Expression
+-- eachArg args e1 e2 =
+--   List.map (OpExp e1 e2) args
+
+crossApplyExpr subject targets =
+  []

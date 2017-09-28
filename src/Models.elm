@@ -45,7 +45,7 @@ type Msg
   | InvalidInput
   | UpdateTarget UserInput
   | StartSolver
-  
+
 type alias Model =
   { problem : ProblemSetup
   , solution : Maybe SolutionSet
@@ -73,9 +73,19 @@ type alias Solution =
 
 type alias Solutions = List Solution
 
+type alias Pair =
+  { left: Expression
+  , right: Expression
+  }
+
+type alias PairedOperator =
+  { pair: Pair
+  , op: Operator
+  }
+
 type Expression
- = Constant Int
- | Pair Expression Expression Operator
+ = ConstExp Int
+ | OpExp PairedOperator
 
 type Operator
  = Add
