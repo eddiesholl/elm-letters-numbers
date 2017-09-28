@@ -148,12 +148,11 @@ textDiv t =
 rowSpacer =
   div [styles Styles.rowSpacer] []
 
-solutionView: Solution -> Html Msg
-solutionView solution =
-  div [styles Styles.flexRow]
-    [ renderExpression solution.attempt
-    , rowSpacer
-    , textDiv solution.result
+solutionRow: Solution -> Html Msg
+solutionRow solution =
+  tr []
+    [ td [] [renderExpression solution.attempt]
+    , td [] [textDiv solution.result]
     ]
 
 solverView: Model -> Html Msg
@@ -179,8 +178,12 @@ solutionsView solution =
     Just s ->
       div []
         [
-        (s.solutions |> List.length |> toString) ++ " solutions" |> text ,
-        div [] (List.map solutionView s.solutions)
+        (s.solutions |> List.length |> toString) ++ " solutions" |> text
+        , table []
+          [ thead [] [ tr [] [ th [] [text "Solution"], th [] [text "Result"] ] ]
+          , tbody [] (List.map solutionRow s.solutions)
+          ]
+          -- (List.map solutionRow s.solutions)
         ]
 
 

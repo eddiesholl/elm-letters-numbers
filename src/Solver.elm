@@ -7,17 +7,26 @@ solve: Problem -> Maybe SolutionSet
 solve problem =
   case problem of
     InvalidProblem ->
-      Just { problem = problem, solutions = [-1] |> generateAttempts |> calculateResults }
+      Just { problem = problem, solutions = [-1] |> generateAttempts |> (calculateResults 0) }
     ValidProblem inputs target ->
-      Just { problem = problem, solutions = inputs |> generateAttempts |> calculateResults }
+      Just { problem = problem, solutions = inputs |> generateAttempts |> (calculateResults target) |> sortResults }
 
-calculateResults: List Expression -> List Solution
-calculateResults attempts =
-  List.map calculateResult attempts
+sortResults solutions =
+  List.sortWith compareResults solutions
 
-calculateResult: Expression -> Solution
-calculateResult e =
-  { attempt = e, result = evalExpression e }
+compareResults a b =
+  compare a.distance b.distance
+
+calculateResults: Input -> List Expression -> List Solution
+calculateResults target attempts =
+  List.map (calculateResult target) attempts
+
+calculateResult: Input -> Expression -> Solution
+calculateResult target e =
+  let
+    result = evalExpression e
+  in
+    { attempt = e, result = evalExpression e, distance = abs (target - result), length = 0 }
 
 evalExpression: Expression -> Int
 evalExpression e =

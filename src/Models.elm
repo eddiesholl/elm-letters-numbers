@@ -69,6 +69,8 @@ type alias SolutionSet =
 type alias Solution =
   { attempt: Expression
   , result: Int
+  , distance: Int
+  , length: Int
   }
 
 type alias Solutions = List Solution
