@@ -18,21 +18,21 @@ deriveExpressions: List Operator -> List Expression -> List Expression
 deriveExpressions args inputs =
   case inputs of
     [e1, e2] ->
-      [e1, e2] ++ (applyArgs e1 e2 args)
+      [e1, e2] ++ (applyArgs e1 args e2)
     [e1] ->
       [e1]
     [] ->
       []
     e1::eRest ->
-      crossApplyExpr e1 (deriveExpressions args eRest)
+      crossApplyExp e1 args (deriveExpressions args eRest)
 
-applyArgs e1 e2 args =
-  List.concatMap (applyArg e1 e2) args
+applyArgs left args right =
+  List.concatMap (applyArg left right) args
 
-applyArg e1 e2 arg =
+applyArg left right arg =
   case (opReverse arg) of
-    True -> [(buildOpExp e1 e2 arg), (buildOpExp e2 e1 arg)]
-    False -> [buildOpExp e1 e2 arg]
+    True -> [(buildOpExp left right arg), (buildOpExp right left arg)]
+    False -> [buildOpExp left right arg]
 
 buildOpExp left right arg =
   OpExp (PairedOperator (Pair left right) arg)
@@ -41,5 +41,8 @@ buildOpExp left right arg =
 -- eachArg args e1 e2 =
 --   List.map (OpExp e1 e2) args
 
-crossApplyExpr subject targets =
-  []
+crossApplyExp subject args targets =
+  let
+    applied = List.concatMap (applyArgs subject args) targets
+  in
+    [subject] ++ targets ++ applied
