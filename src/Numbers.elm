@@ -77,7 +77,7 @@ update msg model =
       let
         newSolution = model.problem |> problemSetupToProblem |> solve
       in
-        ({ model | solution = newSolution, state = Running }, Cmd.none)
+        ({ model | solution = newSolution, state = Done }, Cmd.none)
 
 
 
@@ -139,7 +139,7 @@ inputsView problem =
       , input [onInput targetTyped, problem.target |> inputDisplay |> value] []
       , h3 [] [text "Inputs"]
       , div [] (List.indexedMap inputView problem.inputs)
-      , button [onClick AddInput, disabled invalidInput] [text "add"]
+      , button [class "btn btn-default", onClick AddInput, disabled invalidInput] [text "Add Input"]
       ]
 
 textDiv t =
@@ -159,14 +159,15 @@ solverView: Model -> Html Msg
 solverView { problem, solution, state } =
   let
     canStart = case state of
-      Waiting ->
-        isProblemReady problem
-      _ ->
+      Running ->
         False
+      _ ->
+        isProblemReady problem
+
   in
     div []
       [ h3 [] [text "Solver"]
-      , button [onClick StartSolver, canStart |> not |> disabled] [text "Start"]
+      , button [type_ "button", class "btn btn-default", onClick StartSolver, canStart |> not |> disabled] [text "Start"]
       , solutionsView solution
       ]
 
@@ -179,7 +180,7 @@ solutionsView solution =
       div []
         [
         (s.solutions |> List.length |> toString) ++ " solutions" |> text
-        , table []
+        , table [class "table"]
           [ thead [] [ tr [] [ th [] [text "Solution"], th [] [text "Result"] ] ]
           , tbody [] (List.map solutionRow s.solutions)
           ]
