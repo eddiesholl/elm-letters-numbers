@@ -4,7 +4,11 @@ import Models exposing (Inputs,  Expression(..), Operator(..))
 
 generateAttempts: Inputs -> List Expression
 generateAttempts inputs =
-  generateAttemptsArgs inputs [Add, Subtract]
+  (generateAttemptsConsts inputs) ++
+  (generateAttemptsArgs inputs [Add, Subtract])
+
+generateAttemptsConsts inputs =
+  List.map Constant inputs
 
 generateAttemptsArgs: Inputs -> List Operator -> List Expression
 generateAttemptsArgs inputs args =
@@ -14,9 +18,7 @@ generateAttemptsArgs inputs args =
         c1 = Constant i1
         c2 = Constant i2
       in
-        [c1] ++ (eachArg args c1 c2) ++ (generateAttemptsArgs (i2::iRest) args)
-    [i1] ->
-      [Constant i1]
+        (eachArg args c1 c2) ++ (generateAttemptsArgs (i2::iRest) args)
     _ ->
       []
 
