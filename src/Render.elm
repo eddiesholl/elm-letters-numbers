@@ -13,10 +13,10 @@ renderExpression e =
 expressionToText: Expression -> String
 expressionToText e =
   case e of
-    Constant c ->
+    ConstExp c ->
       c |> toString
-    Pair e1 e2 op ->
-      (expressionToText e1) ++ " " ++ (opToText op) ++ " " ++ (expressionToText e2)
+    OpExp opExp ->
+      "( " ++ (expressionToText opExp.pair.left) ++ " " ++ (opToText opExp.op) ++ " " ++ (expressionToText opExp.pair.right) ++ " )"
 
 opToText: Operator -> String
 opToText op =

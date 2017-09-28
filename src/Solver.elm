@@ -6,7 +6,8 @@ import Attempts exposing (generateAttempts)
 solve: Problem -> Maybe SolutionSet
 solve problem =
   case problem of
-    InvalidProblem -> Nothing
+    InvalidProblem ->
+      Just { problem = problem, solutions = [-1] |> generateAttempts |> calculateResults }
     ValidProblem inputs target ->
       Just { problem = problem, solutions = inputs |> generateAttempts |> calculateResults }
 
@@ -21,10 +22,10 @@ calculateResult e =
 evalExpression: Expression -> Int
 evalExpression e =
   case e of
-    Constant c ->
+    ConstExp c ->
       c
-    Pair e1 e2 op ->
-      evalPair e1 e2 op
+    OpExp opExp ->
+      evalPair opExp.pair.left opExp.pair.right opExp.op
 
 evalPair e1 e2 op =
   let
