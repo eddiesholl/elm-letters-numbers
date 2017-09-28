@@ -1,0 +1,30 @@
+{
+  "name": "letters-numbers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "ace-css": "^1.1.0",
+    "elm-webpack-loader": "^4.3.1",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.9.1"
+  },
+  "devDependencies": {
+    "ace-css": "^1.1.0",
+    "css-loader": "^0.28.7",
+    "elm-webpack-loader": "^4.3.1",
+    "file-loader": "^0.11.2",
+    "style-loader": "^0.18.2",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.9.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "webpack-dev-server"
+  },
+  "author": "",
+  "license": "ISC"
+}
