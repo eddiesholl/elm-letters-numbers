@@ -1,7 +1,7 @@
 {
   "name": "elm-letters-numbers",
   "version": "1.0.0",
-  "description": "",
+  "description": "A solver for the number puzzles on the show 'Letters and Numbers'",
   "main": "webpack.config.js",
   "directories": {
     "test": "tests"
