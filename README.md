@@ -2,6 +2,8 @@
 
 A solver for the number puzzles on the show 'Letters and Numbers'.
 
+You can see a demo running [here](https://eddiesholl.github.io/elm-letters-numbers/)
+
 # Running the UI
 
 - Clone the repo
