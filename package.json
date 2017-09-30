@@ -23,7 +23,9 @@
   },
   "scripts": {
     "test": "elm test",
-    "serve": "webpack-dev-server"
+    "serve": "webpack-dev-server",
+    "build": "webpack",
+    "publish": "npm run build && git checkout gh-pages && cp dist/* docs && git commit -a -m 'gh-pages publish' && git push"
   },
   "author": "",
   "license": "ISC"
