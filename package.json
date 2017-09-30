@@ -25,7 +25,7 @@
     "test": "elm test",
     "serve": "webpack-dev-server",
     "build": "webpack",
-    "publish": "git checkout master && npm run build && cp dist/* demo && git commit --allow-empty -a -m 'gh-pages publish' && git push -u origin master"
+    "publish": "git checkout master && npm run build && cp dist/* docs && git commit --allow-empty -a -m 'gh-pages publish' && git push -u origin master"
   },
   "author": "",
   "license": "ISC"
